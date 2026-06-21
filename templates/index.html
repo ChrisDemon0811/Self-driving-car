@@ -1,0 +1,59 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self-Driving Car Pathfinding</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <main class="container">
+    <section class="map-section">
+      <h1>Self-Driving Car Pathfinding Simulation</h1>
+      <div id="grid" class="grid" aria-label="Grid map"></div>
+      <div class="legend">
+        <span><i class="cell start"></i>Start</span>
+        <span><i class="cell end"></i>End</span>
+        <span><i class="cell obstacle"></i>Obstacle</span>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <section class="panel control-panel">
+        <h2>Control Panel</h2>
+
+        <label for="algorithm">Thuật toán</label>
+        <select id="algorithm">
+          <option value="dfs">DFS</option>
+          <option value="astar">A*</option>
+          <option value="bfs">BFS</option>
+        </select>
+
+        <div class="button-group">
+          <button id="setStartBtn" type="button">Set Start</button>
+          <button id="setEndBtn" type="button">Set End</button>
+          <button id="drawObstacleBtn" type="button">Draw Obstacles</button>
+        </div>
+
+        <div class="button-group">
+          <button id="randomMapBtn" type="button">Generate Random Map</button>
+          <button id="startSimBtn" type="button">Start Simulation</button>
+          <button id="clearBoardBtn" type="button">Clear Board</button>
+        </div>
+
+        <label for="speedSlider">Tốc độ animation: <span id="speedValue">50</span></label>
+        <input id="speedSlider" type="range" min="1" max="100" value="50" />
+      </section>
+
+      <section class="panel stats-panel">
+        <h2>Stats</h2>
+        <p>Thời gian: <span id="statTime">-</span></p>
+        <p>Số node duyệt: <span id="statVisited">-</span></p>
+        <p>Độ dài đường đi: <span id="statPathLength">-</span></p>
+      </section>
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
