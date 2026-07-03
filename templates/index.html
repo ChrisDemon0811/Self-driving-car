@@ -1,56 +1,102 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Self-Driving Car Pathfinding</title>
+  <title>Mô phỏng tìm đường xe tự lái</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
   <main class="container">
     <section class="map-section">
-      <h1>Self-Driving Car Pathfinding Simulation</h1>
-      <div id="grid" class="grid" aria-label="Grid map"></div>
+      <h1>Mô phỏng tìm đường cho xe tự lái</h1>
+      <div id="grid" class="grid" aria-label="Bản đồ dạng lưới"></div>
       <div class="legend">
-        <span><i class="cell start"></i>Start</span>
-        <span><i class="cell end"></i>End</span>
-        <span><i class="cell obstacle"></i>Obstacle</span>
+        <span><i class="cell normal"></i>Đường thường</span>
+        <span><i class="cell rough"></i>Đường xấu</span>
+        <span><i class="cell traffic"></i>Kẹt xe</span>
+        <span><i class="cell danger"></i>Vùng nguy hiểm</span>
+        <span><i class="cell obstacle"></i>Vật cản</span>
+        <span><i class="cell obstacle dynamic-obstacle"></i>Vật cản động</span>
+        <span><i class="cell start"></i>Bắt đầu</span>
+        <span><i class="cell end"></i>Đích</span>
+        <span><i class="cell path"></i>Đường đi</span>
+        <span><i class="cell visited-done"></i>Đã duyệt</span>
       </div>
+
+      <section class="panel stats-panel">
+        <h2>Thống kê mô phỏng</h2>
+        <div class="stats-grid">
+          <p>Thời gian: <span id="statTime">-</span></p>
+          <p>Số node duyệt: <span id="statVisited">-</span></p>
+          <p>Độ dài đường đi: <span id="statPathLength">-</span></p>
+          <p>Tổng chi phí: <span id="statTotalCost">-</span></p>
+          <p class="status-row">Trạng thái: <span id="simStatus">Sẵn sàng</span></p>
+        </div>
+      </section>
+
+      <section class="panel comparison-panel">
+        <h2>So sánh thuật toán</h2>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Thuật toán</th>
+              <th>Độ dài</th>
+              <th>Chi phí</th>
+              <th>Đã duyệt</th>
+              <th>Thời gian</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonBody">
+            <tr>
+              <td colspan="6">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </section>
 
     <aside class="side-panel">
       <section class="panel control-panel">
-        <h2>Control Panel</h2>
+        <h2>Bảng điều khiển</h2>
 
         <label for="algorithm">Thuật toán</label>
         <select id="algorithm">
-          <option value="dfs">DFS</option>
+          <option value="ucs">UCS</option>
           <option value="astar">A*</option>
           <option value="bfs">BFS</option>
         </select>
 
         <div class="button-group">
-          <button id="setStartBtn" type="button">Set Start</button>
-          <button id="setEndBtn" type="button">Set End</button>
-          <button id="drawObstacleBtn" type="button">Draw Obstacles</button>
+          <button id="setStartBtn" type="button">Đặt điểm bắt đầu</button>
+          <button id="setEndBtn" type="button">Đặt điểm đích</button>
+          <button id="drawObstacleBtn" type="button">Vẽ địa hình</button>
         </div>
 
+        <label for="terrainType">Loại ô để vẽ</label>
+        <select id="terrainType">
+          <option value="normal">Đường thường (cost 1)</option>
+          <option value="rough">Đường xấu (cost 3)</option>
+          <option value="traffic">Kẹt xe (cost 5)</option>
+          <option value="danger">Vùng nguy hiểm (cost 8)</option>
+          <option value="obstacle">Vật cản</option>
+        </select>
+
         <div class="button-group">
-          <button id="randomMapBtn" type="button">Generate Random Map</button>
-          <button id="startSimBtn" type="button">Start Simulation</button>
-          <button id="clearBoardBtn" type="button">Clear Board</button>
+          <button id="randomMapBtn" type="button">Tạo bản đồ ngẫu nhiên</button>
+          <button id="startSimBtn" type="button">Bắt đầu mô phỏng</button>
+          <button id="pauseSimBtn" type="button">Tạm dừng</button>
+          <button id="resumeSimBtn" type="button">Tiếp tục</button>
+          <button id="resetSimBtn" type="button">Đặt lại animation</button>
+          <button id="dynamicObstacleBtn" type="button">Thêm vật cản động</button>
+          <button id="clearBoardBtn" type="button">Xóa bảng</button>
         </div>
 
         <label for="speedSlider">Tốc độ animation: <span id="speedValue">50</span></label>
         <input id="speedSlider" type="range" min="1" max="100" value="50" />
       </section>
 
-      <section class="panel stats-panel">
-        <h2>Stats</h2>
-        <p>Thời gian: <span id="statTime">-</span></p>
-        <p>Số node duyệt: <span id="statVisited">-</span></p>
-        <p>Độ dài đường đi: <span id="statPathLength">-</span></p>
-      </section>
     </aside>
   </main>
 

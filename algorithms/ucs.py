@@ -1,13 +1,13 @@
-from collections import deque
+import heapq
 import time
 
-from algorithms.grid_utils import build_result, is_walkable
+from algorithms.grid_utils import build_result, get_cell_cost, is_walkable
 
 
 DIRECTIONS = ((1, 0), (-1, 0), (0, 1), (0, -1))
 
 
-def bfs(grid, start, end):
+def ucs(grid, start, end):
     start_time = time.perf_counter()
 
     rows = len(grid)
@@ -23,13 +23,19 @@ def bfs(grid, start, end):
         elapsed_ms = round((time.perf_counter() - start_time) * 1000, 3)
         return build_result(grid, [], [], elapsed_ms, "Start hoặc Goal không đi được")
 
-    queue = deque([start])
-    visited = {start}
+    costs = {start: 0}
     parent = {}
+    visited = set()
     visited_nodes = []
+    priority_queue = [(0, start)]
 
-    while queue:
-        current = queue.popleft()
+    while priority_queue:
+        current_cost, current = heapq.heappop(priority_queue)
+
+        if current in visited:
+            continue
+
+        visited.add(current)
         visited_nodes.append(current)
 
         if current == end:
@@ -40,10 +46,14 @@ def bfs(grid, start, end):
             nr, nc = current_row + dr, current_col + dc
             neighbor = (nr, nc)
 
-            if is_walkable(grid, nr, nc) and neighbor not in visited:
-                visited.add(neighbor)
+            if not is_walkable(grid, nr, nc) or neighbor in visited:
+                continue
+
+            new_cost = current_cost + get_cell_cost(grid[nr][nc])
+            if new_cost < costs.get(neighbor, float("inf")):
+                costs[neighbor] = new_cost
                 parent[neighbor] = current
-                queue.append(neighbor)
+                heapq.heappush(priority_queue, (new_cost, neighbor))
 
     path = []
     if end in visited:

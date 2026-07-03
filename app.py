@@ -2,15 +2,22 @@ from flask import Flask, jsonify, render_template, request
 
 from algorithms.astar import astar
 from algorithms.bfs import bfs
-from algorithms.dfs import dfs
+from algorithms.grid_utils import TERRAIN_COSTS, get_cell_type, is_walkable
+from algorithms.ucs import ucs
 
 app = Flask(__name__)
 
 ALGORITHMS = {
     "bfs": bfs,
-    "dfs": dfs,
+    "ucs": ucs,
     "astar": astar,
 }
+
+COMPARISON_ORDER = [
+    ("bfs", "BFS"),
+    ("ucs", "UCS"),
+    ("astar", "A*"),
+]
 
 
 @app.route("/")
@@ -36,13 +43,14 @@ def _normalize_grid(raw_grid):
 
         normalized_row = []
         for cell in row:
-            if isinstance(cell, str):
-                value = cell.strip().lower()
-                normalized_row.append(1 if value in {"1", "true", "t", "x", "#", "obstacle"} else 0)
-            elif isinstance(cell, (int, float, bool)):
-                normalized_row.append(1 if bool(cell) else 0)
-            else:
-                normalized_row.append(1 if cell else 0)
+            cell_type = get_cell_type(cell)
+            if cell_type not in TERRAIN_COSTS:
+                cell_type = "normal"
+
+            normalized_row.append({
+                "type": cell_type,
+                "cost": TERRAIN_COSTS[cell_type],
+            })
         normalized.append(normalized_row)
 
     return normalized
@@ -65,31 +73,53 @@ def _parse_point(name, value, rows, cols):
     return row, col
 
 
+def _parse_solve_payload(data):
+    grid = _normalize_grid(data.get("grid"))
+    rows = len(grid)
+    cols = len(grid[0])
+    start = _parse_point("Start", data.get("start"), rows, cols)
+    end = _parse_point("Goal", data.get("end"), rows, cols)
+
+    if not is_walkable(grid, start[0], start[1]) or not is_walkable(grid, end[0], end[1]):
+        raise ValueError("Start/Goal đang nằm trên vật cản.")
+
+    return grid, start, end
+
+
 @app.route("/solve", methods=["POST"])
 def solve():
     data = request.get_json(silent=True) or {}
     algorithm_name = str(data.get("algorithm", "")).strip().lower()
 
     if algorithm_name not in ALGORITHMS:
-        return jsonify({"message": "Thuật toán không hợp lệ. Chọn: bfs, dfs hoặc astar."}), 400
+        return jsonify({"message": "Thuật toán không hợp lệ. Chọn: bfs, ucs hoặc astar."}), 400
 
     try:
-        grid = _normalize_grid(data.get("grid"))
-        rows = len(grid)
-        cols = len(grid[0])
-        start = _parse_point("Start", data.get("start"), rows, cols)
-        end = _parse_point("End", data.get("end"), rows, cols)
+        grid, start, end = _parse_solve_payload(data)
     except ValueError as error:
         return jsonify({"message": str(error)}), 400
 
-    if grid[start[0]][start[1]] == 1 or grid[end[0]][end[1]] == 1:
-        return jsonify({"message": "Start/End đang nằm trên vật cản."}), 400
-
-    solver = ALGORITHMS[algorithm_name]
-    result = solver(grid=grid, start=start, end=end)
-
-    result["message"] = "Success" if result["path"] else "Path not found"
+    result = ALGORITHMS[algorithm_name](grid=grid, start=start, end=end)
     return jsonify(result), 200
+
+
+@app.route("/compare", methods=["POST"])
+def compare_algorithms():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        grid, start, end = _parse_solve_payload(data)
+    except ValueError as error:
+        return jsonify({"message": str(error)}), 400
+
+    results = []
+    for algorithm_key, algorithm_label in COMPARISON_ORDER:
+        result = ALGORITHMS[algorithm_key](grid=grid, start=start, end=end)
+        result["algorithm"] = algorithm_label
+        result["algorithm_key"] = algorithm_key
+        results.append(result)
+
+    return jsonify({"results": results}), 200
 
 
 if __name__ == "__main__":
