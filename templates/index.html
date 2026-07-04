@@ -55,11 +55,27 @@
           </tbody>
         </table>
       </section>
+
+      <section class="panel explanation-panel">
+        <h2>Giải thích kết quả</h2>
+        <p id="explanationText" class="explanation-text">Chưa có kết quả để giải thích.</p>
+      </section>
     </section>
 
     <aside class="side-panel">
       <section class="panel control-panel">
         <h2>Bảng điều khiển</h2>
+
+        <label for="presetMapSelect">Map mẫu demo</label>
+        <select id="presetMapSelect">
+          <option value="demo1">Demo 1: BFS ngắn hơn nhưng chi phí cao</option>
+          <option value="demo2">Demo 2: A* duyệt ít node hơn UCS</option>
+          <option value="demo3">Demo 3: Vật cản động và tính lại đường</option>
+        </select>
+        <button id="loadPresetBtn" type="button">Tải map mẫu</button>
+        <p id="presetDescription" class="preset-description">
+          Chọn một map mẫu để xem mục tiêu demo.
+        </p>
 
         <label for="algorithm">Thuật toán</label>
         <select id="algorithm">
