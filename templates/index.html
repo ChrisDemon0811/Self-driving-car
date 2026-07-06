@@ -24,42 +24,6 @@
         <span><i class="cell visited-done"></i>Đã duyệt</span>
       </div>
 
-      <section class="panel stats-panel">
-        <h2>Thống kê mô phỏng</h2>
-        <div class="stats-grid">
-          <p>Thời gian: <span id="statTime">-</span></p>
-          <p>Số node duyệt: <span id="statVisited">-</span></p>
-          <p>Độ dài đường đi: <span id="statPathLength">-</span></p>
-          <p>Tổng chi phí: <span id="statTotalCost">-</span></p>
-          <p class="status-row">Trạng thái: <span id="simStatus">Sẵn sàng</span></p>
-        </div>
-      </section>
-
-      <section class="panel comparison-panel">
-        <h2>So sánh thuật toán</h2>
-        <table class="comparison-table">
-          <thead>
-            <tr>
-              <th>Thuật toán</th>
-              <th>Độ dài</th>
-              <th>Chi phí</th>
-              <th>Đã duyệt</th>
-              <th>Thời gian</th>
-              <th>Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody id="comparisonBody">
-            <tr>
-              <td colspan="6">-</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section class="panel explanation-panel">
-        <h2>Giải thích kết quả</h2>
-        <p id="explanationText" class="explanation-text">Chưa có kết quả để giải thích.</p>
-      </section>
     </section>
 
     <aside class="side-panel">
@@ -114,6 +78,45 @@
       </section>
 
     </aside>
+
+    <section class="results-section">
+      <section class="panel stats-panel">
+        <h2>Thống kê mô phỏng</h2>
+        <div class="stats-grid">
+          <p>Thời gian: <span id="statTime">-</span></p>
+          <p>Số node duyệt: <span id="statVisited">-</span></p>
+          <p>Độ dài đường đi: <span id="statPathLength">-</span></p>
+          <p>Tổng chi phí: <span id="statTotalCost">-</span></p>
+          <p class="status-row">Trạng thái: <span id="simStatus">Sẵn sàng</span></p>
+        </div>
+      </section>
+
+      <section class="panel comparison-panel">
+        <h2>So sánh thuật toán</h2>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Thuật toán</th>
+              <th>Độ dài</th>
+              <th>Chi phí</th>
+              <th>Đã duyệt</th>
+              <th>Thời gian</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonBody">
+            <tr>
+              <td colspan="6">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel explanation-panel">
+        <h2>Giải thích kết quả</h2>
+        <p id="explanationText" class="explanation-text">Chưa có kết quả để giải thích.</p>
+      </section>
+    </section>
   </main>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
